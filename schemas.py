@@ -11,38 +11,56 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, EmailStr
+from typing import Optional, List, Dict, Any
 
-# Example schemas (replace with your own):
-
+# Core user types
 class User(BaseModel):
-    """
-    Users collection schema
-    Collection name: "user" (lowercase of class name)
-    """
     name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
-    age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
-    is_active: bool = Field(True, description="Whether user is active")
+    email: EmailStr = Field(..., description="Email address")
+    role: str = Field("student", description="user | student | parent | admin")
+    instagram: Optional[str] = None
 
-class Product(BaseModel):
-    """
-    Products collection schema
-    Collection name: "product" (lowercase of class name)
-    """
-    title: str = Field(..., description="Product title")
-    description: Optional[str] = Field(None, description="Product description")
-    price: float = Field(..., ge=0, description="Price in dollars")
-    category: str = Field(..., description="Product category")
-    in_stock: bool = Field(True, description="Whether product is in stock")
+class WaitlistEntry(BaseModel):
+    name: str = Field(..., description="Full Name")
+    email: EmailStr = Field(..., description="Gmail Address")
+    instagram: Optional[str] = Field(None, description="Instagram ID")
+    source: Optional[str] = Field("website", description="Where the user signed up from")
 
-# Add your own schemas here:
-# --------------------------------------------------
+class ContactMessage(BaseModel):
+    name: str
+    email: EmailStr
+    message: str
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class AssessmentSubmission(BaseModel):
+    academic_performance: str
+    interests: List[str]
+    skills: List[str]
+    preferences: List[str]
+    personality_answers: List[int] = Field(..., description="Array of 10–15 integers 1–5")
+    uploaded_docs: Optional[List[str]] = Field(default=None, description="Filenames uploaded")
+    language: str = Field("en", description="en | hi")
+
+class CareerMatch(BaseModel):
+    career: str
+    match_percent: int
+    why_match: List[str]
+    strengths: List[str]
+    skill_gap: List[str]
+    salary_forecast: Dict[str, Any]
+    demand_trends: Dict[str, Any]
+
+class Roadmap(BaseModel):
+    career: str
+    summary: str
+    required_skills: List[str]
+    roadmap: Dict[str, List[str]]
+    actions: List[str]
+
+class CareerTemplate(BaseModel):
+    career: str
+    summary: str
+    required_skills: List[str]
+    roadmap: Dict[str, List[str]]
+    default_actions: List[str]
+    prompts: Optional[Dict[str, str]] = None
